@@ -1,6 +1,7 @@
 import {Response , Request } from 'express'
 import User from '../db/user';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken'
 
 export const signup =async(req:Request,res:Response)=>{
     try {
@@ -35,13 +36,39 @@ export const signup =async(req:Request,res:Response)=>{
 }
 
 export const login = async(req:Request , res:Response )=>{
-    const {email,password} = req.body;
+    try {
+        const {email,password} = req.body;
 
-    const UserExists = await User.findOne({email});
-    if(!UserExists){
-        return res.status(404).json({message:"User not found.."})
+        const UserExists = await User.findOne({email});
+        if(!UserExists){
+            return res.status(404).json({message:"User not found.."})
+        }
+
+        const valid = await bcrypt.compare(password,UserExists.password);
+
+        if(!valid){
+            return res.status(401).json({message:"Password is invalid.."})
+        }
+
+        const token = jwt.sign(
+            {id:UserExists._id},
+            process.env.JWT_SECRET as string,
+            {expiresIn:'1d'}
+        )
+
+        return res.status(200).json({
+            message:"Login successfull",
+            token,
+            user:{
+                id:UserExists._id,
+                username:UserExists.username,
+                email:UserExists.email
+            }
+        })
+        
+    } catch (error) {
+        return res.status(404).json({message:"Internal server error"})        
     }
-
     
 
 }
