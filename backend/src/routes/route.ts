@@ -15,7 +15,7 @@ const editLimiter = rateLimit({
 
 //blog fetching and editing routes..
 router.post('/create-post',authMiddleware,createPost)
-router.get('/posts',getPosts)
+router.get('/get-posts',getPosts)
 router.put('/post/:id',authMiddleware,updatePost)
 router.delete('/user/post/:id',authMiddleware,deletePost)
 
