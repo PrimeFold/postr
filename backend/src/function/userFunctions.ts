@@ -69,6 +69,55 @@ export const login = async(req:Request , res:Response )=>{
     } catch (error) {
         return res.status(404).json({message:"Internal server error"})        
     }
-    
-
 }
+
+
+export const editUsername = async(req:Request,res:Response)=>{
+
+    try {
+        
+        const {username} = req.body;
+        const id = (req as any).user.id;
+        const newUsername = await User.findByIdAndUpdate(id,username)
+
+        if(!newUsername){
+            return res.status(404).json({message:"couldn't update username"})
+        }
+
+        return res.status(201).json({
+            message:"Username updated successfully",newUsername
+        })
+
+
+    } catch (error) {
+        res.status(500).json({
+            message:`Internal Server Error ${(error as Error).message}`  
+        })
+    }
+}
+export const editEmail = async(req:Request,res:Response)=>{
+
+    try {
+        
+        const {email} = req.body;
+        const id = (req as any).user.id;
+        const newEmail = await User.findByIdAndUpdate(id,email)
+
+        if(!newEmail){
+            return res.status(404).json({message:"couldn't update Email"})
+        }
+
+        return res.status(201).json({
+            message:"Email updated successfully",newEmail
+        })
+
+
+    } catch (error) {
+        res.status(500).json({
+            message:`Internal Server Error ${(error as Error).message}`  
+        })
+    }
+}
+
+
+
