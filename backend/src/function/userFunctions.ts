@@ -2,10 +2,19 @@ import {Response , Request } from 'express'
 import User from '../db/user';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
+import { signupSchema } from '../validation/zod';
 
 export const signup =async(req:Request,res:Response)=>{
     try {
-        const {username,password,email} = req.body;
+        const result = signupSchema.safeParse(req.body);
+
+        if(!result.success){
+            return res.status(400).json({
+                message:"Invalid Input"
+            })
+        }
+
+        const {username,email,password} = result.data;
 
 
         const existingUser = await User.findOne({$or: [{ username }, { email }]});
@@ -78,7 +87,7 @@ export const editUsername = async(req:Request,res:Response)=>{
         
         const {username} = req.body;
         const id = (req as any).user.id;
-        const newUsername = await User.findByIdAndUpdate(id,username)
+        const newUsername = await User.findByIdAndUpdate(id,{username})
 
         if(!newUsername){
             return res.status(404).json({message:"couldn't update username"})
@@ -101,7 +110,7 @@ export const editEmail = async(req:Request,res:Response)=>{
         
         const {email} = req.body;
         const id = (req as any).user.id;
-        const newEmail = await User.findByIdAndUpdate(id,email)
+        const newEmail = await User.findByIdAndUpdate(id,{email})
 
         if(!newEmail){
             return res.status(404).json({message:"couldn't update Email"})

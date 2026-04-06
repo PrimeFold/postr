@@ -1,19 +1,29 @@
 import express from 'express'
-import { login, signup } from '../function/userFunctions';
-import { auth } from '../middleware/auth';
-import { deletePost, getPosts, updatePost } from '../function/postFunctions';
+import { editEmail, editUsername, login, signup } from '../function/userFunctions';
+import { authMiddleware } from '../middleware/auth';
+import { createPost, deletePost, getPosts, updatePost } from '../function/postFunctions';
+import { limiter } from '../middleware/ratelimit';
 
+import rateLimit from 'express-rate-limit';
 const router = express.Router();
 
+const editLimiter = rateLimit({
+    windowMs:60*60*24*15*1000,
+    max:1
+})
+
+
 //blog fetching and editing routes..
-
+router.post('/create-post',authMiddleware,createPost)
 router.get('/posts',getPosts)
-router.put('/post/:id',auth,updatePost)
-router.delete('/user/blogs/:id',auth,deletePost)
+router.put('/post/:id',authMiddleware,updatePost)
+router.delete('/user/post/:id',authMiddleware,deletePost)
 
-//authentication and user creation..
-router.post('/signup',signup);
-router.post('/login',login)
+//authentication and user account update..
+router.post('/signup',limiter,signup);
+router.post('/login',limiter,login)
+router.put('/edit-username',editLimiter,editUsername)
+router.put('/edit-email',editLimiter,editEmail)
 
 
 export default router;

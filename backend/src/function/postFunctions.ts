@@ -1,14 +1,14 @@
 import {Request , Response } from 'express';
 import  Post  from '../db/post';
+import { AuthRequest } from '../types';
 
 
-type Req = Request;
 type Res = Response;
 
-export const createPost = async(req : Req,res:Res)=>{
+export const createPost = async(req : AuthRequest,res:Res)=>{
     try {
         const {title,content} = req.body;
-        const author = (req as any).user.id;
+        const author = req.user!.id;
 
         const newPost = await Post.create({title,content,author});
 
@@ -21,12 +21,23 @@ export const createPost = async(req : Req,res:Res)=>{
     }
 }
 
-export const updatePost = async(req:Req,res:Res)=>{
+export const updatePost = async(req:AuthRequest,res:Res)=>{
     try {
         
         const id = req.params.id;
-
+        const userId = req.user!.id;
         const {title,content}= req.body;
+        const post = await Post.findById(id)
+
+        if(!post){
+            return res.status(404).json({message:"Post not found"})
+        }
+
+        if(post.author?.toString()!=userId){
+            return res.status(403).json({
+                message:"Forbidden"
+            })
+        }
 
         const updatedPost = await Post.findByIdAndUpdate(id,{title,content},{new:true})
 
@@ -48,7 +59,7 @@ export const updatePost = async(req:Req,res:Res)=>{
     }
 }
 
-export const getPosts = async(req:Req,res:Res)=>{
+export const getPosts = async(req:AuthRequest,res:Res)=>{
     try {        
         const Posts = await Post.find()
         return res.status(200).json({message:"Posts fetched",Posts})
@@ -59,10 +70,24 @@ export const getPosts = async(req:Req,res:Res)=>{
 
 }
 
-export const deletePost = async(req:Req,res:Res)=>{
+export const deletePost = async(req:AuthRequest,res:Res)=>{
     try {
         
         const id = req.params.id;
+        const userId = req.user!.id;
+        const post = await Post.findById(id)
+
+        if(!post){
+            return res.status(404).json({
+                message:"Post not found"
+            })
+        }
+
+        if(post.author?.toString()!=userId){
+            return res.status(403).json({
+                message:"Forbidden"
+            })
+        }
 
         const deletedPost = await Post.findByIdAndDelete(id)
 
