@@ -1,10 +1,12 @@
-import {Response , Request } from 'express'
+import {Response, Request } from 'express'
 import User from '../db/user';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken'
+import jwt, { Secret, SignOptions } from 'jsonwebtoken'
 import { signupSchema } from '../validation/zod';
+import { AuthRequest } from '../types';
 
-export const signup =async(req:Request,res:Response)=>{
+
+export const signup =async(req:AuthRequest,res:Response)=>{
     try {
         const result = signupSchema.safeParse(req.body);
 
@@ -31,7 +33,10 @@ export const signup =async(req:Request,res:Response)=>{
             password:hashedPassword
         })
 
-        return res.status(201).json({message:"User created successfully",user})
+        return res.status(201).json({message:"User created successfully",user:{
+            username,
+            email,
+        }})
 
     } catch (error) {
         
@@ -44,7 +49,7 @@ export const signup =async(req:Request,res:Response)=>{
 
 }
 
-export const login = async(req:Request , res:Response )=>{
+export const login = async(req:AuthRequest , res:Response )=>{
     try {
         const {email,password} = req.body;
 
@@ -59,15 +64,30 @@ export const login = async(req:Request , res:Response )=>{
             return res.status(401).json({message:"Password is invalid.."})
         }
 
-        const token = jwt.sign(
-            {id:UserExists._id},
-            process.env.JWT_SECRET as string,
-            {expiresIn:'1d'}
+        const accessToken = jwt.sign(
+            {id:UserExists._id.toString() },
+            process.env.JWT_SECRET as Secret,
+            {expiresIn:'15m'}
         )
+
+        const refreshToken = jwt.sign(
+            {id:UserExists._id.toString()},
+            process.env.JWT_REFRESH_SECRET as Secret,
+            {expiresIn:'7d'}
+        )
+
+        res.cookie('refreshToken',refreshToken,{
+            httpOnly:true,
+            secure:process.env.NODE_ENV === 'production',
+            sameSite:'strict',
+            maxAge:7 * 24 * 60 * 60 * 1000
+        })
+
+        await User.findByIdAndUpdate(UserExists._id, { refreshToken });
 
         return res.status(200).json({
             message:"Login successfull",
-            token,
+            accessToken,
             user:{
                 id:UserExists._id,
                 username:UserExists.username,
@@ -81,12 +101,12 @@ export const login = async(req:Request , res:Response )=>{
 }
 
 
-export const editUsername = async(req:Request,res:Response)=>{
+export const editUsername = async(req:AuthRequest,res:Response)=>{
 
     try {
         
         const {username} = req.body;
-        const id = (req as any).user.id;
+        const id = req.user!!.id ;
         const newUsername = await User.findByIdAndUpdate(id,{username})
 
         if(!newUsername){
@@ -104,12 +124,12 @@ export const editUsername = async(req:Request,res:Response)=>{
         })
     }
 }
-export const editEmail = async(req:Request,res:Response)=>{
+export const editEmail = async(req:AuthRequest,res:Response)=>{
 
     try {
         
         const {email} = req.body;
-        const id = (req as any).user.id;
+        const id = req.user!.id;
         const newEmail = await User.findByIdAndUpdate(id,{email})
 
         if(!newEmail){
@@ -128,5 +148,51 @@ export const editEmail = async(req:Request,res:Response)=>{
     }
 }
 
+export const RefreshToken = async(req:Request,res:Response)=>{
+
+    const cookieToken = req.cookies?.refreshToken;
+
+    if(!cookieToken){
+        return res.status(404).json({
+            message:"Refresh token not found.."
+        })
+    }
+
+    try {
+        
+        const decode = jwt.verify(cookieToken,process.env.JWT_REFRESH_SECRET as Secret) as jwt.JwtPayload;
+        const userId = decode.id;
+        const user = await User.findById(userId)
+
+        if(!user || user.refreshToken!=cookieToken){
+            return res.status(403).json({
+                message:"Invalid refresh token"
+            })
+        }
+
+        const newAccessToken = jwt.sign(
+            {id:user._id},
+            process.env.JWT_ACCESS_SECRET as Secret,
+            {expiresIn:'15m'}
+        )
+
+        return res.json({token:newAccessToken})
 
 
+    } catch (error) {
+        return res.status(403).json({ message: "Invalid or expired refresh token" });
+    }
+
+}
+
+export const logout = async(req:AuthRequest,res:Response)=>{
+    const cookieToken = req.cookies?.refreshToken;
+
+    if(cookieToken){
+        await User.findOneAndUpdate({refreshToken:cookieToken},{refreshToken:null})
+    }
+
+    res.clearCookie('refreshToken');
+    return res.json({message:"Logged out successfully"})
+
+}

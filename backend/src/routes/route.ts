@@ -1,5 +1,5 @@
 import express from 'express'
-import { editEmail, editUsername, login, signup } from '../function/userFunctions';
+import { editEmail, editUsername, login, logout, RefreshToken, signup } from '../function/userFunctions';
 import { authMiddleware } from '../middleware/auth';
 import { createPost, deletePost, getPosts, updatePost } from '../function/postFunctions';
 import { limiter } from '../middleware/ratelimit';
@@ -22,8 +22,9 @@ router.delete('/user/post/:id',authMiddleware,deletePost)
 //authentication and user account update..
 router.post('/signup',limiter,signup);
 router.post('/login',limiter,login)
-router.put('/edit-username',editLimiter,editUsername)
-router.put('/edit-email',editLimiter,editEmail)
-
+router.put('/edit-username',editLimiter,authMiddleware,editUsername)
+router.put('/edit-email',editLimiter,authMiddleware,editEmail)
+router.post('/refresh', RefreshToken);
+router.post('/logout', logout);
 
 export default router;

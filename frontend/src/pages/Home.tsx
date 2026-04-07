@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Link } from "react-router-dom"
 import { Pencil } from "lucide-react"
-import { useState,useEffect } from "react"
+import GithubButton from "@/components/githubstar"
 
 
 const Home = () => {
@@ -15,22 +15,20 @@ const Home = () => {
           <Badge variant="secondary" className="mb-4 bg-background/80 shadow-sm">
             <Pencil className="mr-1 h-3 w-3" /> A simple blogging platform
           </Badge>
+          
           <h1 className="text-5xl font-bold tracking-tight sm:text-6xl">
             Share your <span className="text-primary">thoughts</span>
           </h1>
+          
           <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground">
             Create, read, and discuss posts from a community of writers. Postr
             makes blogging easy and beautiful.
           </p>
           <div className="mt-8 flex justify-center gap-4">
             <Link to="/create">
-              <Button size="lg" className="shadow-md">Write a Post</Button>
+              <Button size="lg" className="shadow-md cursor-pointer hover:scale-105 transition-all transform-gpu antialiased">Write a Post</Button>
             </Link>
-            <Link to="/feed">
-              <Button variant="outline" size="lg">
-                Browse Feed
-              </Button>
-            </Link>
+          <GithubButton/>  
           </div>
         </div>
       </section>
