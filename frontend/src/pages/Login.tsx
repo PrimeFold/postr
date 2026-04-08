@@ -10,8 +10,40 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Link } from "react-router-dom"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { login } from "@/api/auth"
+
 
 const Login = () => {
+  
+  const navigate = useNavigate()
+  const [email,setEmail] = useState('')
+  const [password,setPassword] = useState('')
+  const [loading,setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleSubmit = async(e)=>{
+
+    e.preventDefault(),
+    setError('')
+    setLoading(true)
+
+    try {
+      
+      const response = await login(email,password)
+      localStorage.setItem('accessToken',response.accessToken)
+      navigate('/feed')
+    } catch (error:any) {
+
+      setError(error.response?.data?.message || 'Login Failed')
+
+    }finally{
+      setLoading(false)
+    }
+  }
+
+  
   return (
     <div className="flex min-h-[80vh] items-center justify-center px-4">
       <Card className="w-full max-w-md shadow-lg">
@@ -22,20 +54,20 @@ const Login = () => {
           <CardTitle className="text-2xl">Welcome back</CardTitle>
           <CardDescription>Log in to your Postr account</CardDescription>
         </CardHeader>
-        <form>
+        <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="you@example.com" />
+              <Input type="email" value={email} placeholder="you@example.com" onChange={(e)=>setEmail(e.target.value)} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" />
+              <Input type='password' value={password} placeholder="*******" onChange={(e)=>setPassword(e.target.value)} />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
-            <Button className="w-full shadow-sm" type="submit">
-              Log in
+            <Button className="w-full shadow-sm" disabled={loading} type="submit">
+              {loading? 'Logging in...' : 'Log in'}
             </Button>
             <p className="text-center text-sm text-muted-foreground">
               Don't have an account?{" "}
