@@ -5,7 +5,7 @@ import { AuthRequest } from '../types';
 
 export const authMiddleware = (req:AuthRequest,res:Response,next:NextFunction)=>{
 
-    const header = req.headers.authorization;
+    const header = req.headers?.authorization;
 
     if(!header){
         return res.status(401).json({

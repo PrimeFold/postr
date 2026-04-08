@@ -6,3 +6,5 @@ export const signupSchema = z.object({
     password:z.string().min(6)
 })
 
+
+

@@ -96,7 +96,7 @@ export const login = async(req:AuthRequest , res:Response )=>{
         })
         
     } catch (error) {
-        return res.status(404).json({message:"Internal server error"})        
+        return res.status(500).json({message:"Internal server error"})        
     }
 }
 
@@ -153,7 +153,7 @@ export const RefreshToken = async(req:Request,res:Response)=>{
     const cookieToken = req.cookies?.refreshToken;
 
     if(!cookieToken){
-        return res.status(404).json({
+        return res.status(401).json({
             message:"Refresh token not found.."
         })
     }
@@ -172,9 +172,24 @@ export const RefreshToken = async(req:Request,res:Response)=>{
 
         const newAccessToken = jwt.sign(
             {id:user._id},
-            process.env.JWT_ACCESS_SECRET as Secret,
+            process.env.JWT_SECRET as Secret,
             {expiresIn:'15m'}
         )
+
+        const newRefreshToken = jwt.sign(
+            {id:user._id},
+            process.env.JWT_REFRESH_SECRET as Secret,
+            {expiresIn:'7d'}
+        )
+
+        await User.findByIdAndUpdate(user._id,{refreshToken:newRefreshToken})
+
+        res.cookie('refreshToken',newRefreshToken,{
+            httpOnly:true,
+            secure:process.env.NODE_ENV === 'production',
+            sameSite:'strict',
+            maxAge:7*24*60*60*1000
+        })
 
         return res.json({token:newAccessToken})
 
