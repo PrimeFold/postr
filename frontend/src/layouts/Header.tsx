@@ -1,6 +1,13 @@
 import { Link } from "react-router-dom"
+import { useAuth } from "@/context/authContext"
 
 const Header = () => {
+  const { isAuthenticated, logout, user } = useAuth()
+
+  const handleLogout = async () => {
+    await logout()
+  }
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto flex h-14 items-center px-4">
@@ -24,18 +31,43 @@ const Header = () => {
           >
             About
           </Link>
+          
+          {isAuthenticated && (
+            <Link
+              to="/feed"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Feed
+            </Link>
+          )}
         </nav>
         <div className="ml-auto flex items-center gap-4">
-          <Link to="/login">
-            <span className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-              Log in
-            </span>
-          </Link>
-          <Link to="/register">
-            <span className="text-sm font-medium text-primary hover:underline">
-              Sign up
-            </span>
-          </Link>
+          {isAuthenticated ? (
+            <>
+              <span className="text-sm text-muted-foreground">
+                Hi, {user?.username}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+              >
+                Log out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login">
+                <span className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                  Log in
+                </span>
+              </Link>
+              <Link to="/register">
+                <span className="text-sm font-medium text-primary hover:underline">
+                  Sign up
+                </span>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>

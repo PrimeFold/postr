@@ -13,11 +13,14 @@ import { Link } from "react-router-dom"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { login } from "@/api/auth"
+import toast  from 'react-hot-toast'
+import { useAuth } from "@/context/authContext"
 
 
 const Login = () => {
-  
+
   const navigate = useNavigate()
+  const { login: authLogin } = useAuth()
   const [email,setEmail] = useState('')
   const [password,setPassword] = useState('')
   const [loading,setLoading] = useState(false)
@@ -25,18 +28,20 @@ const Login = () => {
 
   const handleSubmit = async(e)=>{
 
-    e.preventDefault(),
+    e.preventDefault();
     setError('')
     setLoading(true)
 
     try {
-      
+
       const response = await login(email,password)
-      localStorage.setItem('accessToken',response.accessToken)
+      authLogin(response.user, response.accessToken)
+      toast.success('Logged in successfully!')
       navigate('/feed')
     } catch (error:any) {
-
-      setError(error.response?.data?.message || 'Login Failed')
+      const errmsg = error.response?.data?.message || 'Login failed'
+      setError(errmsg)
+      toast.error(errmsg)
 
     }finally{
       setLoading(false)

@@ -13,6 +13,7 @@ import { Link } from "react-router-dom"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { signup } from "@/api/auth"
+import toast from 'react-hot-toast'
 
 const Register = () => {
 
@@ -31,9 +32,12 @@ const Register = () => {
     try {
       
       await signup(username,email,password);
+      toast.success('Signup successfull!')
       navigate('/login')
     } catch (error:any) {
-      setError(error.response?.data?.message || 'Signup failed')
+      const errmsg = error.response?.data?.message || 'Signup failed'
+      setError(errmsg)
+      toast.error(errmsg)
     }finally{
       setLoading(false)
     }
@@ -58,11 +62,11 @@ const Register = () => {
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input value={email} placeholder="you@example.com" onChange={(e)=>setEmail(e.target.value)}/>
+              <Input type="email" value={email} placeholder="you@example.com" onChange={(e)=>setEmail(e.target.value)}/>
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input value={password} onChange={(e)=>setPassword(e.target.value)} />
+              <Input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">

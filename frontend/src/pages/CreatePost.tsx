@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { useNavigate } from "react-router-dom"
+import { Pencil } from "lucide-react"
 
 const CreatePost = () => {
   const navigate = useNavigate()
@@ -32,7 +33,6 @@ const CreatePost = () => {
         <form
           onSubmit={(e) => {
             e.preventDefault()
-            // TODO: wire up to your backend
             navigate("/feed")
           }}
         >
