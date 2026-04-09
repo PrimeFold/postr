@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(npx *)",
-      "Bash(findstr *)"
+      "Bash(findstr *)",
+      "Read(c:\\Coding\\DSA/**)"
     ]
   },
   "$version": 3

@@ -27,3 +27,6 @@ build/
 # temporary files
 .tmp
 .cache
+.qwen/settings.json
+.qwen
+
