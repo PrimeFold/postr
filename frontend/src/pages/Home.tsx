@@ -11,7 +11,7 @@ const Home = () => {
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-accent/40">
-        <div className="container mx-auto px-4 py-24 text-center">
+        <div className="container mx-auto px-4 py-28 text-center">
           <Badge variant="secondary" className="mb-4 bg-background/80 shadow-sm">
             <Pencil className="mr-1 h-3 w-3" /> A simple blogging platform
           </Badge>

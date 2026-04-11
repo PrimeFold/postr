@@ -12,9 +12,32 @@ import {
 } from "@/components/ui/card"
 import { useNavigate } from "react-router-dom"
 import { Pencil } from "lucide-react"
+import api from "@/api/axios"
+import toast from "react-hot-toast"
+import { useState } from "react"
 
 const CreatePost = () => {
+  const [title,setTitle] = useState('')
+  const [content,setContent] = useState('')
+  const [_loading, setLoading] = useState(false)
   const navigate = useNavigate()
+
+  const PublishPost = async()=>{
+    
+    if(!title.trim() || !content.trim())
+      return toast.error("Title and Content are required")
+    
+    setLoading(true)
+    try {
+      await api.post('/create-post',{title,content})
+      toast.success("Post created successfully")
+      navigate("/feed")
+    } catch (error) {
+      toast.error((error as any).response?.data?.message || 'Error creating post')
+    }finally{
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="container mx-auto max-w-2xl px-4 py-12">
@@ -33,13 +56,13 @@ const CreatePost = () => {
         <form
           onSubmit={(e) => {
             e.preventDefault()
-            navigate("/feed")
+            PublishPost()
           }}
         >
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="title">Title</Label>
-              <Input id="title" placeholder="An interesting topic..." />
+              <Input id="title" value={title} onChange={(e)=>setTitle(e.target.value)} placeholder="An interesting topic..." />
             </div>
             <div className="space-y-2">
               <Label htmlFor="content">Content</Label>
@@ -47,6 +70,7 @@ const CreatePost = () => {
                 id="content"
                 placeholder="Write your post here..."
                 rows={10}
+                onChange={(e)=>setContent(e.target.value)}
               />
             </div>
           </CardContent>

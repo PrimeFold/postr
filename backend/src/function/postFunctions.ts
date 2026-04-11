@@ -61,7 +61,7 @@ export const updatePost = async(req:AuthRequest,res:Res)=>{
 
 export const getPosts = async(req:AuthRequest,res:Res)=>{
     try {        
-        const Posts = await Post.find()
+        const Posts = await Post.find().populate('author','username')
         return res.status(200).json({message:"Posts fetched",Posts})
 
     } catch (error) {

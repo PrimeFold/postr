@@ -1,13 +1,11 @@
 import api from "./axios"
 
-const BASE_URL = 'http://localhost:3000'
-
 export const fetchPosts = async()=>{
-    const response = await api.get(`${BASE_URL}/get-posts`)
+    const response = await api.get('/get-posts')
     return response.data.Posts
 }
 
 export const fetchMyPosts = async()=>{
-    const response = await api.get(`${BASE_URL}/my-posts`)
-    return response.data.Posts
+    const response = await api.get('/my-posts')
+    return response.data.myPosts
 }

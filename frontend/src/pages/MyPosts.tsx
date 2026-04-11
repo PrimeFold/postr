@@ -28,14 +28,33 @@ const MyPosts = () => {
         loadPosts()
     }, [])
 
-    if (loading) return <div className="p-8">Loading your posts...</div>
+    if (loading) {
+        return (
+            <div className="container mx-auto max-w-5xl px-4 py-16">
+                <p className="text-center text-sm text-muted-foreground">
+                    Loading your posts...
+                </p>
+            </div>
+        )
+    }
 
-    if (posts.length === 0) return <div className="p-8">No posts yet. Create your first post!</div>
+    if (posts.length === 0) {
+        return (
+            <div className="container mx-auto max-w-5xl px-4 py-16 text-center">
+                <p className="text-sm text-muted-foreground">
+                    No posts yet. Create your first post!
+                </p>
+            </div>
+        )
+    }
 
     return (
-        <main className="p-8">
-            <h1 className="text-2xl font-bold mb-6">Your Posts</h1>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="container mx-auto max-w-5xl px-4 py-10">
+            <h1 className="mb-8 text-3xl font-semibold tracking-tight">
+                Your Posts
+            </h1>
+
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {posts.map((post) => (
                     <Post
                         key={post._id}
@@ -47,7 +66,7 @@ const MyPosts = () => {
                     />
                 ))}
             </div>
-        </main>
+        </div>
     )
 }
 

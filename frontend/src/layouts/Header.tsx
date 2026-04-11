@@ -22,12 +22,6 @@ const Header = () => {
         </Link>
         <nav className="flex items-center gap-6 text-sm">
           <Link
-            to="/"
-            className="text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Home
-          </Link>
-          <Link
             to="/about"
             className="text-muted-foreground transition-colors hover:text-foreground"
           >
