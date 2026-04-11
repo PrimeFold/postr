@@ -1,7 +1,7 @@
 import express from 'express'
 import { editEmail, editUsername, login, logout, RefreshToken, signup } from '../function/userFunctions';
 import { authMiddleware } from '../middleware/auth';
-import { createPost, deletePost, getPosts, updatePost } from '../function/postFunctions';
+import { createPost, deletePost, getMyPosts, getPosts, updatePost } from '../function/postFunctions';
 import { limiter } from '../middleware/ratelimit';
 
 import rateLimit from 'express-rate-limit';
@@ -16,6 +16,7 @@ const editLimiter = rateLimit({
 //blog fetching and editing routes..
 router.post('/create-post',authMiddleware,createPost)
 router.get('/get-posts',getPosts)
+router.get('/my-posts',authMiddleware,getMyPosts)
 router.put('/post/:id',authMiddleware,updatePost)
 router.delete('/user/post/:id',authMiddleware,deletePost)
 

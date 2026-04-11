@@ -6,6 +6,8 @@ import About from "./pages/About"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 import CreatePost from "./pages/CreatePost"
+import Dashboard from "./pages/Dashboard"
+import MyPosts from "./pages/MyPosts"
 import NotFound from "./pages/NotFound"
 import { AuthProvider } from "./context/authContext"
 import ProtectedRoute from "./components/ProtectedRoute"
@@ -21,11 +23,22 @@ const App = () => {
           <Route path="about" element={<About />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
-          <Route path="create" element={<CreatePost />} />
+          <Route path="create" element={
+            <ProtectedRoute>
+              <CreatePost />
+            </ProtectedRoute>
+          } />
+          <Route path="dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="my-posts" element={
+            <ProtectedRoute>
+              <MyPosts />
+            </ProtectedRoute>
+          } />
           <Route path="*" element={<NotFound />} />
-          <ProtectedRoute>
-            <CreatePost/>
-          </ProtectedRoute>
         </Route>
       </Routes>
     </BrowserRouter>

@@ -70,6 +70,23 @@ export const getPosts = async(req:AuthRequest,res:Res)=>{
 
 }
 
+export const getMyPosts = async(req:AuthRequest,res:Res)=>{
+    try {
+        
+        const userId = req.user!.id;
+        const myPosts = await Post.find({author:userId})
+
+        if(!myPosts){
+            return res.status(200).json({message:"No posts"})
+        }
+
+        return res.status(200).json({message:"My posts fetched",myPosts})
+
+    } catch (error) {
+        return res.status(500).json({message:"Internal server error.."})
+    }
+}
+
 export const deletePost = async(req:AuthRequest,res:Res)=>{
     try {
         
