@@ -34,7 +34,7 @@ api.interceptors.response.use(
                 return api(originalRequest)
             } catch (refreshError) {
                 localStorage.removeItem('accessToken')
-                window.location.href = '/login'
+                window.dispatchEvent(new Event('auth:unauthorized'))
                 return Promise.reject(refreshError)
             }
         }

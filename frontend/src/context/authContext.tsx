@@ -32,7 +32,20 @@ export const AuthProvider = ({children}:{children:ReactNode})=>{
             setUser(JSON.parse(storedUser))
         }
         setLoading(false)
-    },[])
+
+        const handleUnauthorized = () => {
+            localStorage.removeItem('accessToken')
+            localStorage.removeItem('user')
+            setUser(null)
+            navigate('/login')
+        }
+
+        window.addEventListener('auth:unauthorized', handleUnauthorized)
+        
+        return () => {
+            window.removeEventListener('auth:unauthorized', handleUnauthorized)
+        }
+    }, [navigate])
 
     const login = (userData:User,token:string)=>{
         localStorage.setItem('accessToken',token)
