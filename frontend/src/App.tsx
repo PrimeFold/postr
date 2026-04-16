@@ -14,35 +14,35 @@ import ProtectedRoute from "./components/ProtectedRoute"
 
 const App = () => {
   return (
-    <AuthProvider>
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<Home />} />
-          <Route path="feed" element={<Feed />} />
-          <Route path="about" element={<About />} />
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
-          <Route path="create" element={
-            <ProtectedRoute>
-              <CreatePost />
-            </ProtectedRoute>
-          } />
-          <Route path="dashboard" element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } />
-          <Route path="my-posts" element={
-            <ProtectedRoute>
-              <MyPosts />
-            </ProtectedRoute>
-          } />
-          <Route path="*" element={<NotFound />} />
-        </Route>
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<MainLayout />}>
+            <Route index element={<Home />} />
+            <Route path="feed" element={<Feed />} />
+            <Route path="about" element={<About />} />
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+            <Route path="create" element={
+              <ProtectedRoute>
+                <CreatePost />
+              </ProtectedRoute>
+            } />
+            <Route path="dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="my-posts" element={
+              <ProtectedRoute>
+                <MyPosts />
+              </ProtectedRoute>
+            } />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
-    </AuthProvider>
   )
 }
 

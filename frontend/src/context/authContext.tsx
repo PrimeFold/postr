@@ -1,5 +1,6 @@
 import { createContext,useContext,useState,useEffect} from "react";
 import { type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 import {logout as logoutApi}  from '@/api/auth'
 
 interface User{
@@ -21,6 +22,7 @@ const AuthContext = createContext<AuthContextType | null>(null)
 export const AuthProvider = ({children}:{children:ReactNode})=>{
     const [user,setUser] = useState<User | null>(null)
     const[loading,setLoading]=useState(true)
+    const navigate = useNavigate();
 
     useEffect(()=>{
         const storedUser = localStorage.getItem('user')
@@ -48,7 +50,7 @@ export const AuthProvider = ({children}:{children:ReactNode})=>{
             localStorage.removeItem('accessToken')
             localStorage.removeItem('user')
             setUser(null)
-            window.location.href = '/login'
+            navigate('/login')
         }
 
 
