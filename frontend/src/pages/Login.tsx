@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom"
 import { login } from "@/api/auth"
 import toast  from 'react-hot-toast'
 import { useAuth } from "@/context/authContext"
-
+import {Eye,EyeOff} from 'lucide-react'
 
 const Login = () => {
 
@@ -25,6 +25,7 @@ const Login = () => {
   const [password,setPassword] = useState('')
   const [loading,setLoading] = useState(false)
   const [_error, setError] = useState('')
+  const [showPassword,setShowPassword] = useState(false)
 
   const handleSubmit = async(e:any)=>{
 
@@ -42,7 +43,6 @@ const Login = () => {
       const errmsg = error.response?.data?.message || 'Login failed'
       setError(errmsg)
       toast.error(errmsg)
-
     }finally{
       setLoading(false)
     }
@@ -65,9 +65,16 @@ const Login = () => {
               <Label htmlFor="email">Email</Label>
               <Input type="email" value={email} placeholder="you@example.com" onChange={(e)=>setEmail(e.target.value)} />
             </div>
+            
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input type='password' value={password} placeholder="*******" onChange={(e)=>setPassword(e.target.value)} />
+              <div className="relative">
+                <Label htmlFor="password">Password</Label>
+                <Input type={showPassword? 'text' : 'password'} className="pr-10" value={password} onChange={(e)=>setPassword(e.target.value)} />
+                <button type="button" onClick={()=>setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                  {showPassword? (<EyeOff className="h-4 w-4"/>
+                  ):(<Eye className="h-4 w-4"/>)}
+                </button>
+              </div>
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">

@@ -30,3 +30,4 @@ build/
 .qwen/settings.json
 .qwen
 
+frontend/src/api/practise.code-workspace

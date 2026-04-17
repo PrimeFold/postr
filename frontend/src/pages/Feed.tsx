@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
+import Loader from "@/components/loading"
 import { Clock, Pencil } from "lucide-react"
 import { Link } from "react-router-dom"
 import { fetchPosts } from '@/api/posts'
@@ -34,22 +34,8 @@ const Feed = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto max-w-3xl px-4 py-12">
-        <Skeleton className="mb-8 h-10 w-48" />
-        <div className="space-y-6">
-          {[1, 2, 3].map((i) => (
-            <Card key={i}>
-              <CardHeader>
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="mt-2 h-4 w-5/6" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+      <div className="container mx-auto max-w-3xl px-4 py-32 flex justify-center items-center">
+        <Loader />
       </div>
     )
   }
