@@ -10,14 +10,16 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import Loader from "@/components/loading"
-import { Clock, Pencil } from "lucide-react"
+import { ArrowLeft, ArrowRight, Clock, Pencil } from "lucide-react"
 import { Link } from "react-router-dom"
 import { fetchPosts } from '@/api/posts'
 
 const Feed = () => {
+  const [currentPage , setCurrentPage] = useState(0)
   const [posts, setPosts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-
+  const postsPerPage = 5;
+  
   useEffect(() => {
     const loadPosts = async () => {
       try {
@@ -32,6 +34,24 @@ const Feed = () => {
     loadPosts()
   }, [])
 
+  useEffect(()=>{
+    const startIndex = (currentPage) * postsPerPage;
+    const endIndex = startIndex + postsPerPage;
+    setPosts(posts.slice(startIndex,endIndex))
+  },[currentPage,posts])
+  
+  const handlePageChange =({type}:{type:"left" | "right"})=>{
+
+    if(currentPage==0 && setCurrentPage(currentPage-1)){
+      setCurrentPage(currentPage+1);
+    }else if(type=='right'){
+      setCurrentPage(currentPage+1);
+    }else{
+      setCurrentPage(currentPage-1);
+    }
+
+  }
+  
   if (loading) {
     return (
       <div className="container mx-auto max-w-3xl px-4 py-32 flex justify-center items-center">
@@ -99,6 +119,15 @@ const Feed = () => {
             </CardFooter>
           </Card>
         ))}
+        <p>
+          
+          <button disabled={currentPage==0} onClick={() => handlePageChange({ type: "left" })} >
+            <ArrowLeft/>
+          </button>
+          <button disabled={currentPage==posts.length-1} onClick={() => handlePageChange({ type: "right" })} >
+            <ArrowRight/>
+          </button>
+        </p>
       </div>
     </div>
   )
